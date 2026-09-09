@@ -1,0 +1,194 @@
+<div class="admin-shell">
+
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-logo">
+            <span class="logo-badge">LIVE</span> <span>GOSSIP ADMIN</span>
+        </div>
+
+        <div class="admin-nav-section">
+            <div class="admin-nav-label">Content Management</div>
+            <button ng-class="{'active': activeTab==='movies' && activeSection==='content'}" ng-click="setTab('movies')"><i class="fa-solid fa-film"></i> Movies Management</button>
+            <button ng-class="{'active': activeTab==='music' && activeSection==='content'}" ng-click="setTab('music')"><i class="fa-solid fa-music"></i> Music Management</button>
+            <button ng-class="{'active': activeTab==='celebrities' && activeSection==='content'}" ng-click="setTab('celebrities')"><i class="fa-solid fa-star"></i> Celebrities Management</button>
+            <button ng-class="{'active': activeTab==='trending' && activeSection==='content'}" ng-click="setTab('trending')"><i class="fa-solid fa-fire"></i> Trending Releases</button>
+            <button ng-class="{'active': activeTab==='influencers' && activeSection==='content'}" ng-click="setTab('influencers')"><i class="fa-solid fa-hashtag"></i> Influencer Stories</button>
+        </div>
+
+        <div class="admin-nav-section">
+            <div class="admin-nav-label">Live Settings</div>
+            <button ng-class="{'active': activeSection==='ticker'}" ng-click="setSection('ticker')"><i class="fa-solid fa-triangle-exclamation"></i> Breaking News Ticker</button>
+        </div>
+
+        <div class="admin-nav-section">
+            <div class="admin-nav-label">Account</div>
+            <button ng-class="{'active': activeSection==='profile'}" ng-click="setSection('profile')"><i class="fa-solid fa-user"></i> Admin Profile</button>
+            <button ng-click="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout &amp; Back to Website</button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+
+        <!-- ================= CONTENT TABLE ================= -->
+        <div ng-if="activeSection==='content'">
+            <div class="admin-toolbar">
+                <div class="admin-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" ng-model="searchQuery" placeholder="Search content...">
+                </div>
+                <button class="admin-btn-primary" ng-click="openAddModal()"><i class="fa-solid fa-plus"></i> Add New Content</button>
+            </div>
+
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>POSTER</th>
+                            <th>TITLE</th>
+                            <th>CATEGORY</th>
+                            <th>RATING</th>
+                            <th>YEAR</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in filteredList()">
+                            <td><img ng-src="{{ item.image }}" class="admin-thumb" alt="{{ item.title }}"></td>
+                            <td class="admin-cell-title">
+                                {{ item.title }}
+                                <span class="admin-pin-tag" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</span>
+                            </td>
+                            <td>{{ item.category }}</td>
+                            <td><i class="fa-solid fa-star" style="color:var(--accent-amber); font-size:11px;"></i> {{ item.rating }}</td>
+                            <td>{{ item.year }}</td>
+                            <td>
+                                <span class="admin-status-badge" ng-class="item.status === 'Draft' ? 'is-draft' : 'is-published'">{{ item.status }}</span>
+                            </td>
+                            <td class="admin-actions">
+                                <button ng-click="togglePin(item)" ng-class="{'admin-icon-pinned': item.pinned}" title="{{ item.pinned ? 'Unpin' : 'Pin to top' }}"><i class="fa-solid fa-thumbtack"></i></button>
+                                <button ng-click="openEditModal(item)" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                <a href="#!/news/{{ item.id }}" target="_blank" title="Preview"><i class="fa-solid fa-eye"></i></a>
+                                <button class="admin-icon-danger" ng-click="askDelete(item)" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>
+                        <tr ng-if="filteredList().length === 0">
+                            <td colspan="7" class="admin-empty-row">No content found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= BREAKING NEWS TICKER ================= -->
+        <div ng-if="activeSection==='ticker'" class="admin-panel-card">
+            <h2><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-amber);"></i> Breaking News Ticker</h2>
+            <p class="admin-panel-desc">This text streams live at the top of the public website.</p>
+            <textarea ng-model="tickerText" rows="3"></textarea>
+            <button class="admin-btn-primary" ng-click="saveTicker()"><i class="fa-solid fa-check"></i> Update Live Ticker</button>
+        </div>
+
+        <!-- ================= ADMIN PROFILE ================= -->
+        <div ng-if="activeSection==='profile'" class="admin-panel-card">
+            <h2><i class="fa-solid fa-user" style="color:var(--accent-red);"></i> Admin Profile</h2>
+            <div class="admin-profile-row"><span>Username</span><strong>{{ adminUsername }}</strong></div>
+            <div class="admin-profile-row"><span>Role</span><strong>Administrator</strong></div>
+            <div class="admin-profile-row"><span>Session Status</span><strong>Active</strong></div>
+        </div>
+    </main>
+
+    <!-- ================= ADD / EDIT MODAL ================= -->
+    <div class="admin-modal-backdrop" ng-if="showModal" ng-click="closeModal()">
+        <div class="admin-modal" ng-click="$event.stopPropagation()">
+            <div class="admin-modal-header">
+                <h3>{{ editMode ? 'Edit Content' : 'Add New Content' }}</h3>
+                <button class="btn-close" ng-click="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="admin-modal-body">
+                <div class="admin-form-group">
+                    <label>Cover / Main Poster Image</label>
+                    <div class="admin-image-picker">
+                        <img ng-if="formItem.image" ng-src="{{ formItem.image }}" class="admin-image-preview">
+                        <div class="admin-image-preview admin-image-placeholder" ng-if="!formItem.image"><i class="fa-solid fa-image"></i></div>
+                        <div class="admin-image-inputs">
+                            <label class="admin-upload-btn">
+                                <i class="fa-solid fa-upload"></i> Upload Image
+                                <input type="file" accept="image/*" onchange="angular.element(this).scope().onImageFileSelected(this.files)" style="display:none;">
+                            </label>
+                            <input type="text" ng-model="formItem.image" placeholder="Or paste an image URL...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label>Title</label>
+                        <input type="text" ng-model="formItem.title" placeholder="Content title">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Category</label>
+                        <select ng-model="formItem.category">
+                            <option value="Movies">Movies</option>
+                            <option value="Music">Music</option>
+                            <option value="Celebrities">Celebrities</option>
+                            <option value="Trending">Trending</option>
+                            <option value="Influencers">Influencers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-row admin-form-row-3">
+                    <div class="admin-form-group">
+                        <label>Rating</label>
+                        <input type="text" ng-model="formItem.rating" placeholder="8.5">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Release Year</label>
+                        <input type="text" ng-model="formItem.year" placeholder="2026">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Status</label>
+                        <select ng-model="formItem.status">
+                            <option value="Published">Published</option>
+                            <option value="Draft">Draft</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>YouTube Trailer Embed URL</label>
+                    <input type="text" ng-model="formItem.trailer" placeholder="https://www.youtube.com/embed/...">
+                </div>
+
+                <div class="admin-form-group">
+                    <label>Short Summary (for cards)</label>
+                    <textarea ng-model="formItem.summary" rows="2"></textarea>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>Full Editorial Content (for detail view)</label>
+                    <textarea ng-model="formItem.content" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button class="admin-btn-secondary" ng-click="closeModal()">Cancel</button>
+                <button class="admin-btn-primary" ng-click="saveItem()"><i class="fa-solid fa-check"></i> {{ editMode ? 'Save Changes' : 'Add Content' }}</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DELETE CONFIRM MODAL ================= -->
+    <div class="admin-modal-backdrop" ng-if="confirmDeleteItem" ng-click="cancelDelete()">
+        <div class="admin-modal admin-modal-small" ng-click="$event.stopPropagation()">
+            <div class="admin-modal-body admin-confirm-body">
+                <i class="fa-solid fa-triangle-exclamation admin-confirm-icon"></i>
+                <h3>Delete "{{ confirmDeleteItem.title }}"?</h3>
+                <p>This action cannot be undone.</p>
+            </div>
+            <div class="admin-modal-footer">
+                <button class="admin-btn-secondary" ng-click="cancelDelete()">Cancel</button>
+                <button class="admin-danger-btn" ng-click="confirmDelete()"><i class="fa-solid fa-trash-can"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+
+</div>

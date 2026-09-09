@@ -1,0 +1,35 @@
+<div>
+    <h2 class="section-title"><i class="fa-solid fa-hashtag" style="color:var(--accent-cyan);"></i> Influencer Stories</h2>
+    <div class="fusion-grid">
+        <a ng-repeat="item in influencerList" ng-href="#!/news/{{ item.id }}" class="fusion-card glow-cyan">
+            <div class="fusion-poster">
+                <div class="glass-tag tag-cyan"><span class="tag-dot"></span> INFLUENCERS</div>
+                <div class="pin-badge" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</div>
+
+                <button class="btn-bookmark" ng-class="{'bookmarked': isBookmarked(item.id)}" ng-click="toggleBookmark(item, $event)" title="Save">
+                    <i class="fa-solid fa-bookmark"></i>
+                </button>
+
+                <button class="btn-trailer-overlay" ng-click="openTrailer(item, $event)">
+                    <i class="fa-solid fa-play"></i> Trailer
+                </button>
+
+                <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+            </div>
+            <div class="fusion-info">
+                <div class="fusion-title">{{ item.title }}</div>
+                <div class="fusion-meta">
+                    <span>{{ item.category }}</span>
+                    <span class="fusion-pill">{{ item.year }}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="no-results-box" ng-if="influencerList.length === 0">
+        <i class="fa-solid fa-hashtag" style="font-size: 40px; color: var(--text-dim); margin-bottom: 12px;"></i>
+        <h3 style="font-size: 18px; margin-bottom: 6px;">No influencer stories yet</h3>
+        <p style="color: var(--text-dim);">Check back soon for the latest creator news.</p>
+    </div>
+</div>

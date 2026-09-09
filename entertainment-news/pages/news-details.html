@@ -1,0 +1,24 @@
+<div style="max-width: 860px; margin: 0 auto;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span class="glass-tag" style="position: static;"><span class="tag-dot"></span> {{ article.category | uppercase }}</span>
+            <span class="glass-rating" style="position: static;"><i class="fa-solid fa-star"></i> {{ article.rating }}</span>
+        </div>
+
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 15px;">{{ article.title }}</h1>
+        <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">
+            Release Year: {{ article.year }} • Category: {{ article.category }}
+        </p>
+
+        <img ng-src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-bottom: 25px;">
+
+        <p style="font-size: 17px; line-height: 1.8; color: #f1f5f9; margin-bottom: 18px;">{{ article.summary }}</p>
+        <p style="font-size: 15px; line-height: 1.8; color: var(--text-dim);">{{ article.content }}</p>
+
+        <div style="margin-top: 35px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+            <a href="#!/home" style="color: var(--accent-red); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</div>

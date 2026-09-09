@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="entertainmentApp" ng-controller="AppController">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Gossip</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#!/home" class="logo">
+                <span class="logo-badge">LIVE</span>
+                <span class="logo-title">MEDIA <span class="highlight">GOSSIP</span></span>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="#!/home" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="#!/movies" class="nav-item"><i class="fa-solid fa-film"></i> Movies</a>
+                <a href="#!/music" class="nav-item"><i class="fa-solid fa-music"></i> Music</a>
+                <a href="#!/celebrities" class="nav-item"><i class="fa-solid fa-star"></i> Celebrities</a>
+                <a href="#!/trending" class="nav-item"><i class="fa-solid fa-fire"></i> Trending</a>
+                <a href="#!/influencers" class="nav-item"><i class="fa-solid fa-hashtag"></i> Influencers</a>
+                <a href="#!/bookmarks" class="nav-item bookmark-nav">
+                    <i class="fa-solid fa-bookmark"></i> Bookmarks 
+                    <span class="bookmark-count" ng-if="bookmarks.length > 0">{{ bookmarks.length }}</span>
+                </a>
+                <a href="#!/about" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
+            </nav>
+
+            <a href="{{ isAdminLoggedIn ? '#!/admin/dashboard' : '#!/admin/login' }}" class="admin-access-btn" title="Admin Access">
+                <i class="fa-solid fa-lock"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Breaking News Ticker -->
+    <div class="ticker-bar">
+        <div class="ticker-inner">
+            <div class="ticker-label"><span class="dot"></span> BREAKING</div>
+            <div class="ticker-text">{{ tickerText }}</div>
+        </div>
+    </div>
+
+    <!-- Main Angular SPA Content Area -->
+    <main class="page-wrapper">
+        <div ng-view></div>
+    </main>
+
+    <!-- VIDEO TRAILER MODAL -->
+    <div class="modal-backdrop" ng-if="activeTrailer" ng-click="closeTrailer()">
+        <div class="modal-window" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clapperboard" style="color:var(--accent-red);"></i> {{ activeTrailer.title }} — Official Trailer</h3>
+                <button class="btn-close" ng-click="closeTrailer()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-video-wrap">
+                <iframe ng-src="{{ activeTrailer.videoUrl }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <div class="footer-box">
+                <div class="logo">
+                    <span class="logo-badge">LIVE</span>
+                    <span class="logo-title">MEDIA <span class="highlight">GOSSIP</span></span>
+                </div>
+                <p class="footer-text">Your primary destination for curated pop-culture news, film trailers, albums, and celebrity spotlight coverage.</p>
+                <div class="social-row">
+                    <a href="#!/home"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#!/home"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#!/home"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#!/home"><i class="fa-brands fa-spotify"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-box">
+                <h3>Quick Channels</h3>
+                <ul class="footer-links">
+                    <li><a href="#!/movies"><i class="fa-solid fa-chevron-right"></i> Movie Reviews</a></li>
+                    <li><a href="#!/music"><i class="fa-solid fa-chevron-right"></i> Music Releases</a></li>
+                    <li><a href="#!/celebrities"><i class="fa-solid fa-chevron-right"></i> Red Carpet News</a></li>
+                    <li><a href="#!/influencers"><i class="fa-solid fa-chevron-right"></i> Influencer Stories</a></li>
+                    <li><a href="#!/bookmarks"><i class="fa-solid fa-chevron-right"></i> Saved Bookmarks</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h3>Newsletter</h3>
+                <p class="footer-text">Subscribe for weekly roundups directly to your email.</p>
+                <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit"><i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-copyright">
+            <p>&copy; 2026 Media Gossip SPA. All rights reserved.</p>
+            <div>
+                <a href="#!/about">Privacy</a>
+                <a href="#!/about">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AngularJS & Routes -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+    <!-- Application Script -->
+    <script src="js/app.js"></script>
+
+    <!-- Admin Panel & CMS -->
+    <script src="js/services/ContentService.js"></script>
+    <script src="js/services/AuthService.js"></script>
+    <script src="js/controllers/AdminLoginController.js"></script>
+    <script src="js/controllers/AdminDashboardController.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<div class="admin-login-wrap">
+
+    <!-- ================= LOGIN VIEW ================= -->
+    <form class="admin-login-card" ng-if="view === 'login'" ng-submit="submitLogin()">
+        <div class="admin-login-badge"><i class="fa-solid fa-lock"></i></div>
+        <h2>Admin Access</h2>
+        <p class="admin-login-sub">Sign in to manage Media Gossip content</p>
+
+        <div class="admin-form-group">
+            <label>Username</label>
+            <input type="text" ng-model="credentials.username" placeholder="admin" autofocus required>
+        </div>
+
+        <div class="admin-form-group">
+            <label>Password</label>
+            <input type="password" ng-model="credentials.password" placeholder="••••••••" required>
+        </div>
+
+        <div class="admin-login-success" ng-if="resetSuccess">
+            <i class="fa-solid fa-circle-check"></i> {{ resetSuccess }}
+        </div>
+
+        <div class="admin-login-error" ng-if="loginError">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ loginError }}
+        </div>
+
+        <button type="submit" class="admin-btn-primary admin-btn-block">
+            <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
+
+        <!-- <a href="javascript:void(0)" class="admin-login-forgot" ng-click="showForgotPassword()">Forgot password?</a> -->
+
+        <a href="#!/home" class="admin-login-back"><i class="fa-solid fa-arrow-left"></i> Back to Website</a>
+    </form>
+
+    <!-- ================= FORGOT PASSWORD VIEW ================= -->
+    <form class="admin-login-card" ng-if="view === 'forgot'" ng-submit="submitReset()">
+        <div class="admin-login-badge"><i class="fa-solid fa-key"></i></div>
+        <h2>Reset Password</h2>
+        <p class="admin-login-sub">Choose a new password for the admin account</p>
+
+        <div class="admin-form-group">
+            <label>New Password</label>
+            <input type="password" ng-model="resetForm.newPassword" placeholder="At least 6 characters" autofocus required>
+        </div>
+
+        <div class="admin-form-group">
+            <label>Confirm New Password</label>
+            <input type="password" ng-model="resetForm.confirmPassword" placeholder="Re-enter new password" required>
+        </div>
+
+        <div class="admin-login-error" ng-if="resetError">
+            <i class="fa-solid fa-circle-exclamation"></i> {{ resetError }}
+        </div>
+
+        <button type="submit" class="admin-btn-primary admin-btn-block">
+            <i class="fa-solid fa-check"></i> Update Password
+        </button>
+
+        <a href="javascript:void(0)" class="admin-login-forgot" ng-click="backToLogin()"><i class="fa-solid fa-arrow-left"></i> Back to Log In</a>
+    </form>
+
+</div>

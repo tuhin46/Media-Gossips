@@ -1,0 +1,40 @@
+<div>
+    <h2 class="section-title">
+        <i class="fa-solid fa-bookmark" style="color:var(--accent-red);"></i> Saved Bookmarks ({{ bookmarks.length }})
+    </h2>
+
+    <!-- Empty State Message -->
+    <div ng-if="bookmarks.length === 0" style="text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-subtle);">
+        <i class="fa-regular fa-bookmark" style="font-size: 48px; color: var(--text-dim); margin-bottom: 15px;"></i>
+        <h3 style="font-size: 20px; margin-bottom: 8px;">No Bookmarks Saved Yet</h3>
+        <p style="color: var(--text-dim); margin-bottom: 20px;">Click the bookmark icon on any card to save your favorite entertainment stories here.</p>
+        <a href="#!/home" style="background: var(--accent-red); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700;">Explore Releases</a>
+    </div>
+
+    <!-- Bookmarks Grid -->
+    <div class="fusion-grid" ng-if="bookmarks.length > 0">
+        <a ng-repeat="item in bookmarks" ng-href="#!/news/{{ item.id }}" class="fusion-card">
+            <div class="fusion-poster">
+                <div class="glass-tag"><span class="tag-dot"></span> {{ item.category | uppercase }}</div>
+                
+                <button class="btn-bookmark bookmarked" ng-click="toggleBookmark(item, $event)" title="Remove Bookmark">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+
+                <button class="btn-trailer-overlay" ng-click="openTrailer(item, $event)">
+                    <i class="fa-solid fa-play"></i> Trailer
+                </button>
+
+                <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+            </div>
+            <div class="fusion-info">
+                <div class="fusion-title">{{ item.title }}</div>
+                <div class="fusion-meta">
+                    <span>{{ item.category }}</span>
+                    <span class="fusion-pill">{{ item.year }}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

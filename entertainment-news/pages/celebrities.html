@@ -1,0 +1,20 @@
+<div>
+    <h2 class="section-title"><i class="fa-solid fa-star" style="color:var(--accent-purple);"></i> Celebrity Spotlight</h2>
+    <div class="fusion-grid">
+        <a ng-repeat="item in celebrityList" ng-href="#!/news/{{ item.id }}" class="fusion-card glow-purple">
+            <div class="fusion-poster">
+                <div class="glass-tag tag-purple"><span class="tag-dot"></span> CELEB</div>
+                <div class="pin-badge" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</div>
+                <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+            </div>
+            <div class="fusion-info">
+                <div class="fusion-title">{{ item.title }}</div>
+                <div class="fusion-meta">
+                    <span>{{ item.category }}</span>
+                    <span class="fusion-pill">{{ item.year }}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

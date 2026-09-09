@@ -1,0 +1,199 @@
+<div>
+
+    <!-- SEARCH & FILTER CONTROL BAR -->
+    <div class="search-control-box">
+        <form class="search-form-group" ng-submit="executeSearch()">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" 
+                       placeholder="Type movie, artist, or year (e.g. Dhurandhar, 2025)..." 
+                       ng-model="searchInput"
+                       ng-change="onTyping()">
+                <button type="button" class="btn-clear-input" ng-if="searchInput" ng-click="clearSearch()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <button type="submit" class="btn-search-action">
+                <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+        </form>
+
+        <!-- Category Filters -->
+        <div class="filter-pills">
+            <button class="filter-btn" ng-class="{'active': selectedCategory === ''}" ng-click="setCategory('')">All</button>
+            <button class="filter-btn" ng-class="{'active': selectedCategory === 'Movies'}" ng-click="setCategory('Movies')">Movies</button>
+            <button class="filter-btn" ng-class="{'active': selectedCategory === 'Music'}" ng-click="setCategory('Music')">Music</button>
+            <button class="filter-btn" ng-class="{'active': selectedCategory === 'Celebrities'}" ng-click="setCategory('Celebrities')">Celebrities</button>
+            <button class="filter-btn" ng-class="{'active': selectedCategory === 'Influencers'}" ng-click="setCategory('Influencers')">Influencers</button>
+        </div>
+    </div>
+
+    <!-- ================= 1. DEDICATED SEARCH RESULTS (SHOWN WHEN SEARCHING) ================= -->
+    <div ng-if="activeSearch">
+        <div class="search-results-banner">
+            <h3>
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-red);"></i> 
+                Search Results for "<span style="color:var(--accent-red);">{{ activeSearch }}</span>" 
+                ({{ searchResults.length }} found)
+            </h3>
+            <button class="btn-clear-search" ng-click="clearSearch()">Clear Search ✕</button>
+        </div>
+
+        <!-- Matching Cards Grid -->
+        <div class="fusion-grid" ng-if="searchResults.length > 0">
+            <a ng-repeat="item in searchResults" ng-href="#!/news/{{ item.id }}" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot"></span> {{ item.category | uppercase }}</div>
+                    <div class="pin-badge" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</div>
+                    
+                    <button class="btn-bookmark" ng-class="{'bookmarked': isBookmarked(item.id)}" ng-click="toggleBookmark(item, $event)" title="Save">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </button>
+
+                    <button class="btn-trailer-overlay" ng-click="openTrailer(item, $event)">
+                        <i class="fa-solid fa-play"></i> Trailer
+                    </button>
+
+                    <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">{{ item.title }}</div>
+                    <div class="fusion-meta">
+                        <span>{{ item.category }}</span>
+                        <span class="fusion-pill">{{ item.year }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Zero Results Found Message -->
+        <div class="no-results-box" ng-if="searchResults.length === 0">
+            <i class="fa-solid fa-film" style="font-size: 40px; color: var(--text-dim); margin-bottom: 12px;"></i>
+            <h3 style="font-size: 18px; margin-bottom: 6px;">No entertainment records found for "{{ activeSearch }}"</h3>
+            <p style="color: var(--text-dim); margin-bottom: 16px;">Try searching for "Dhurandhar", "Kalki", "Tour", or "2026".</p>
+            <button class="btn-search-action" style="margin: 0 auto;" ng-click="clearSearch()">View All Titles</button>
+        </div>
+    </div>
+
+    <!-- ================= 2. DEFAULT VIEW: SPOTLIGHT + EXPLORE CHANNELS ================= -->
+    <div ng-if="!activeSearch">
+        <h2 class="section-title">
+            <i class="fa-solid fa-hashtag" style="color:var(--accent-cyan);"></i> Spotlight: Influencers &amp; Celebrities
+        </h2>
+
+        <div class="fusion-grid">
+            <a ng-repeat="item in spotlightList" ng-href="#!/news/{{ item.id }}" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot"></span> {{ item.category | uppercase }}</div>
+                    <div class="pin-badge" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</div>
+
+                    <button class="btn-bookmark" ng-class="{'bookmarked': isBookmarked(item.id)}" ng-click="toggleBookmark(item, $event)" title="Save">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </button>
+
+                    <button class="btn-trailer-overlay" ng-click="openTrailer(item, $event)">
+                        <i class="fa-solid fa-play"></i> Trailer
+                    </button>
+
+                    <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">{{ item.title }}</div>
+                    <div class="fusion-meta">
+                        <span>{{ item.category }}</span>
+                        <span class="fusion-pill">{{ item.year }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <h2 class="section-title">
+            <i class="fa-solid fa-layer-group" style="color:var(--accent-red);"></i> Explore Channels
+        </h2>
+
+        <div class="fusion-grid">
+            <a href="#!/movies" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot"></span> MOVIES</div>
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80" alt="Movies">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> 9.2</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">Cinema & Trailers</div>
+                    <div class="fusion-meta"><span>Blockbusters</span><span class="fusion-pill">Explore →</span></div>
+                </div>
+            </a>
+
+            <a href="#!/music" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot" style="background:var(--accent-cyan);"></span> MUSIC</div>
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=700&q=80" alt="Music">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> 8.9</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">Albums & Concerts</div>
+                    <div class="fusion-meta"><span>Top 50 Hits</span><span class="fusion-pill">Listen →</span></div>
+                </div>
+            </a>
+
+            <a href="#!/celebrities" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot" style="background:var(--accent-purple);"></span> CELEB</div>
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80" alt="Celebrities">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> 9.0</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">Star Spotlight</div>
+                    <div class="fusion-meta"><span>Red Carpet</span><span class="fusion-pill">View →</span></div>
+                </div>
+            </a>
+
+            <a href="#!/trending" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot" style="background:var(--accent-amber);"></span> HOT</div>
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=700&q=80" alt="Trending">
+                    <div class="badge-rating"><i class="fa-solid fa-star"></i> 9.5</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">Trending Stories</div>
+                    <div class="fusion-meta"><span>Viral Headlines</span><span class="fusion-pill">Read →</span></div>
+                </div>
+            </a>
+        </div>
+
+        <!-- FEATURED RELEASES -->
+        <h2 class="section-title">
+            <i class="fa-solid fa-bolt" style="color:var(--accent-red);"></i> Featured Releases
+        </h2>
+
+        <div class="fusion-grid">
+            <a ng-repeat="item in allList | filter:{category: selectedCategory}" ng-href="#!/news/{{ item.id }}" class="fusion-card">
+                <div class="fusion-poster">
+                    <div class="glass-tag"><span class="tag-dot"></span> {{ item.category | uppercase }}</div>
+                    <div class="pin-badge" ng-if="item.pinned"><i class="fa-solid fa-thumbtack"></i> Pinned</div>
+                    
+                    <button class="btn-bookmark" ng-class="{'bookmarked': isBookmarked(item.id)}" ng-click="toggleBookmark(item, $event)" title="Save">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </button>
+
+                    <button class="btn-trailer-overlay" ng-click="openTrailer(item, $event)">
+                        <i class="fa-solid fa-play"></i> Trailer
+                    </button>
+
+                    <img ng-src="{{ item.image }}" alt="{{ item.title }}">
+                    <div class="glass-rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</div>
+                </div>
+                <div class="fusion-info">
+                    <div class="fusion-title">{{ item.title }}</div>
+                    <div class="fusion-meta">
+                        <span>{{ item.category }}</span>
+                        <span class="fusion-pill">{{ item.year }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
