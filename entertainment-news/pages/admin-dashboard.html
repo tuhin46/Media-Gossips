@@ -27,6 +27,8 @@
     </aside>
 
     <main class="admin-main">
+        <p role="alert" class="admin-login-error" ng-if="saveError && !showModal">{{ saveError }}</p>
+        <p role="status" ng-if="storageMessage">{{ storageMessage }}</p>
 
         <!-- ================= CONTENT TABLE ================= -->
         <div ng-if="activeSection==='content'">
@@ -65,7 +67,7 @@
                                 <span class="admin-status-badge" ng-class="item.status === 'Draft' ? 'is-draft' : 'is-published'">{{ item.status }}</span>
                             </td>
                             <td class="admin-actions">
-                                <button ng-click="togglePin(item)" ng-class="{'admin-icon-pinned': item.pinned}" title="{{ item.pinned ? 'Unpin' : 'Pin to top' }}"><i class="fa-solid fa-thumbtack"></i></button>
+                                <button ng-click="togglePin(item)" ng-disabled="saving" ng-class="{'admin-icon-pinned': item.pinned}" title="{{ item.pinned ? 'Unpin' : 'Pin to top' }}"><i class="fa-solid fa-thumbtack"></i></button>
                                 <button ng-click="openEditModal(item)" title="Edit"><i class="fa-solid fa-pen"></i></button>
                                 <a href="#!/news/{{ item.id }}" target="_blank" title="Preview"><i class="fa-solid fa-eye"></i></a>
                                 <button class="admin-icon-danger" ng-click="askDelete(item)" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
@@ -84,7 +86,7 @@
             <h2><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-amber);"></i> Breaking News Ticker</h2>
             <p class="admin-panel-desc">This text streams live at the top of the public website.</p>
             <textarea ng-model="tickerText" rows="3"></textarea>
-            <button class="admin-btn-primary" ng-click="saveTicker()"><i class="fa-solid fa-check"></i> Update Live Ticker</button>
+            <button class="admin-btn-primary" ng-click="saveTicker()" ng-disabled="saving"><i class="fa-solid fa-check"></i> Update Live Ticker</button>
         </div>
 
         <!-- ================= ADMIN PROFILE ================= -->
@@ -93,6 +95,10 @@
             <div class="admin-profile-row"><span>Username</span><strong>{{ adminUsername }}</strong></div>
             <div class="admin-profile-row"><span>Role</span><strong>Administrator</strong></div>
             <div class="admin-profile-row"><span>Session Status</span><strong>Active</strong></div>
+            <p>Import a browser content backup once to move existing articles and uploaded images to Drive.</p>
+            <label class="admin-upload-btn">Import content backup
+                <input type="file" accept="application/json,.json" ng-disabled="saving" onchange="angular.element(this).scope().importBackup(this.files)" style="display:none;">
+            </label>
         </div>
     </main>
 
@@ -169,9 +175,11 @@
                     <textarea ng-model="formItem.content" rows="4"></textarea>
                 </div>
             </div>
+            <p role="alert" class="admin-login-error" ng-if="saveError">{{ saveError }}</p>
+            <p role="status" ng-if="saving">Saving to Drive…</p>
             <div class="admin-modal-footer">
-                <button class="admin-btn-secondary" ng-click="closeModal()">Cancel</button>
-                <button class="admin-btn-primary" ng-click="saveItem()"><i class="fa-solid fa-check"></i> {{ editMode ? 'Save Changes' : 'Add Content' }}</button>
+                <button class="admin-btn-secondary" ng-click="closeModal()" ng-disabled="saving || imageLoading">Cancel</button>
+                <button class="admin-btn-primary" ng-click="saveItem()" ng-disabled="saving || imageLoading"><i class="fa-solid fa-check"></i> {{ editMode ? 'Save Changes' : 'Add Content' }}</button>
             </div>
         </div>
     </div>
@@ -186,7 +194,7 @@
             </div>
             <div class="admin-modal-footer">
                 <button class="admin-btn-secondary" ng-click="cancelDelete()">Cancel</button>
-                <button class="admin-danger-btn" ng-click="confirmDelete()"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                <button class="admin-danger-btn" ng-click="confirmDelete()" ng-disabled="saving"><i class="fa-solid fa-trash-can"></i> Delete</button>
             </div>
         </div>
     </div>

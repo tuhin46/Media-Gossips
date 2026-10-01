@@ -1,135 +1,114 @@
-app.factory('ContentService', function ($rootScope) {
-
-    var STORAGE_KEY = 'ep_content_db';
-    var TICKER_KEY = 'ep_ticker_text';
-    var DEFAULT_TICKER = 'Live coverage: Global Music Tour Announced \u2022 Sci-Fi Blockbuster hits $1B worldwide \u2022 Cannes 2026 dates confirmed';
-
-    var defaultData = [
-        { id: 101, title: "Dhurandhar", category: "Movies", rating: "8.5", year: "2025", status: "Published", image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "High-octane action thriller breaking box office pre-sales records.", content: "Critics are praising the direction, stunts, and breakout performances. The film is tracking for record global box office earnings." },
-        { id: 102, title: "Ustaad Bhagat Singh", category: "Movies", rating: "8.0", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Massive commercial entertainer scheduled for theatrical release.", content: "Anticipation reaches fever pitch as trailers reveal action-packed sequences and unforgettable dialogues." },
-        { id: 103, title: "Sambhavami", category: "Movies", rating: "8.6", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Intense suspense drama gaining international festival buzz.", content: "Directed by acclaimed visionaries, the film explores mystery, nature, and human drama." },
-        { id: 104, title: "Kalki 2898 AD", category: "Movies", rating: "8.3", year: "2024", status: "Published", image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Futuristic sci-fi spectacle that redefined visual storytelling.", content: "A massive global hit blending mythology and futuristic tech with cutting-edge visual effects." },
-        { id: 201, title: "Global Stadium World Tour", category: "Music", rating: "9.1", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Pop sensation reveals 40-city international stadium dates.", content: "Tickets sold out in minutes across all European and American tour stops." },
-        { id: 202, title: "Midnight Acoustics Album", category: "Music", rating: "8.7", year: "2025", status: "Published", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Chart-topping acoustic release sweeping global streaming playlists.", content: "An intimate listening experience praised for authentic songwriting and vocals." },
-        { id: 301, title: "Cannes Red Carpet Gala", category: "Celebrities", rating: "9.4", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "Stars gather for the most glamorous fashion night of the season.", content: "Unveiling top fashion couture, red carpet arrivals, and exclusive backstage interviews." },
-        { id: 302, title: "Hollywood Spotlight Forum", category: "Celebrities", rating: "9.0", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "A-list actors talk about the future of filmmaking and creative craft.", content: "Insightful discussions with veteran actors and breakout performers of the year." },
-        { id: 401, title: "Cannes 2026 Dates Confirmed", category: "Trending", rating: "9.5", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "The festival unveils its official 2026 calendar to global anticipation.", content: "Organizers confirm the red-carpet lineup dates, drawing early buzz from studios worldwide." },
-        { id: 501, title: "Lifestyle Creator Hits 20M Followers", category: "Influencers", rating: "8.9", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "The viral content creator celebrates a massive social media milestone.", content: "Known for daily vlogs and brand collaborations, the creator's rapid rise has made them one of the most-watched personalities online." },
-        { id: 502, title: "Influencer Fashion Line Sells Out in Hours", category: "Influencers", rating: "8.7", year: "2026", status: "Published", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=700&q=80", trailer: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "A social media star's debut apparel drop crashes the retailer's site.", content: "Fans camped online for the limited drop, which sold out globally within the first hour of launch." }
-    ];
-
-    function load() {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        var data;
-
-        if (!raw) {
-            data = angular.copy(defaultData);
-        } else {
-            try {
-                data = JSON.parse(raw);
-            } catch (e) {
-                data = angular.copy(defaultData);
-            }
-        }
-
-        // Migration: seed any newly introduced category (e.g. Influencers) for
-        // users who already had content saved from an earlier version.
-        var existingCategories = {};
-        data.forEach(function (item) { existingCategories[item.category] = true; });
-        defaultData.forEach(function (seedItem) {
-            if (!existingCategories[seedItem.category]) {
-                data.push(angular.copy(seedItem));
-                existingCategories[seedItem.category] = true;
-            }
-        });
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        return data;
-    }
-
-    var db = load();
-
-    function persist() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-        $rootScope.$broadcast('contentUpdated', db);
-    }
-
+app.factory('ContentService', function ($rootScope, $http, $q) {
+    var db = [];
+    var ticker = '';
+    var pending = {};
     var svc = {};
-
-    function sortItems(list) {
+    function apply(state) {
+        db = state.items;
+        ticker = state.ticker;
+        $rootScope.$broadcast('contentUpdated');
+        $rootScope.$broadcast('tickerUpdated', ticker);
+        return state;
+    }
+    function error(response) {
+        return $q.reject(new Error(response.data && response.data.error ||
+            'Storage could not be reached. Check the website before retrying.'));
+    }
+    function requestId() {
+        var bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        return Array.prototype.map.call(bytes, function (byte) { return ('0' + byte.toString(16)).slice(-2); }).join('');
+    }
+    function write(action, input) {
+        var body = angular.extend({ action: action }, input);
+        var fingerprint = JSON.stringify(body);
+        body.requestId = pending[fingerprint] || requestId();
+        pending[fingerprint] = body.requestId;
+        return $http.post('/api/storage', body).then(function (response) {
+            delete pending[fingerprint];
+            return apply(response.data);
+        }, error);
+    }
+    function sort(list) {
         return list.slice().sort(function (a, b) {
-            var pinDiff = (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
-            if (pinDiff !== 0) return pinDiff;
-            return b.id - a.id;
+            return ((b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)) || (b.id - a.id);
         });
     }
-
-    svc.getAll = function () {
-        return sortItems(db);
+    svc.load = function (admin) {
+        return $http.get('/api/storage', { params: { action: admin ? 'admin' : 'public' } })
+            .then(function (response) { return apply(response.data); }, error);
     };
-
-    svc.getPublished = function () {
-        return sortItems(db.filter(function (item) { return item.status !== 'Draft'; }));
-    };
-
+    svc.getAll = function () { return sort(db); };
+    svc.getPublished = function () { return sort(db.filter(function (item) { return item.status === 'Published'; })); };
     svc.getByCategory = function (category, publishedOnly) {
-        return sortItems(db.filter(function (item) {
-            var matches = item.category === category;
-            return publishedOnly ? matches && item.status !== 'Draft' : matches;
+        return sort(db.filter(function (item) {
+            return item.category === category && (!publishedOnly || item.status === 'Published');
         }));
     };
-
     svc.getById = function (id) {
-        return db.find(function (item) { return item.id === parseInt(id); });
+        return db.filter(function (item) { return item.id === Number(id); })[0];
     };
-
-    svc.add = function (item) {
-        item.id = Date.now();
-        if (!item.status) item.status = 'Published';
-        item.pinned = !!item.pinned;
-        db.push(item);
-        persist();
-        return item;
-    };
-
-    svc.update = function (item) {
-        var idx = db.findIndex(function (i) { return i.id === item.id; });
-        if (idx > -1) {
-            db[idx] = item;
-            persist();
-        }
-        return item;
-    };
-
+    svc.add = function (item) { return write('add', { item: item }); };
+    svc.update = function (item) { return write('update', { id: item.id, version: item.version, item: item }); };
     svc.remove = function (id) {
-        db = db.filter(function (i) { return i.id !== id; });
-        persist();
+        var item = svc.getById(id);
+        return write('remove', { id: id, version: item && item.version });
     };
-
     svc.togglePin = function (id) {
-        var item = db.find(function (i) { return i.id === id; });
-        if (item) {
-            item.pinned = !item.pinned;
-            persist();
-        }
-        return item;
+        var item = svc.getById(id);
+        return write('pin', { id: id, version: item && item.version });
     };
-
-    // Converts a File object (from an <input type="file">) into a Base64 data URL
-    svc.fileToBase64 = function (file, callback) {
+    svc.getTicker = function () { return ticker; };
+    svc.setTicker = function (text) { return write('ticker', { text: text }); };
+    svc.fileToBase64 = function (file, callback, onError) {
         var reader = new FileReader();
-        reader.onload = function (e) { callback(e.target.result); };
+        reader.onerror = function () { if (onError) onError('Image could not be read.'); };
+        reader.onload = function () {
+            var image = new Image();
+            image.onerror = function () { if (onError) onError('Choose a valid image.'); };
+            image.onload = function () {
+                var scale = Math.min(1, 800 / Math.max(image.width, image.height));
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(image.width * scale));
+                canvas.height = Math.max(1, Math.round(image.height * scale));
+                canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+                var result = canvas.toDataURL('image/jpeg', 0.7);
+                if (result.length > 1000000) { if (onError) onError('Use a smaller image.'); return; }
+                callback(result);
+            };
+            image.src = reader.result;
+        };
         reader.readAsDataURL(file);
     };
-
-    svc.getTicker = function () {
-        return localStorage.getItem(TICKER_KEY) || DEFAULT_TICKER;
+    svc.importLegacy = function (data, progress) {
+        var items = Array.isArray(data) ? data : data.items;
+        if (!Array.isArray(items)) return $q.reject(new Error('The backup must contain a content array.'));
+        var chain = $q.when();
+        items.forEach(function (item, index) {
+            chain = chain.then(function () {
+                var prepared = angular.copy(item);
+                var ready = $q.when(prepared);
+                if (/^data:image\//.test(prepared.image || '') && prepared.image.length > 1000000) {
+                    ready = $q(function (resolve, reject) {
+                        try {
+                            var parts = prepared.image.split(',');
+                            var decoded = atob(parts[1]);
+                            var bytes = new Uint8Array(decoded.length);
+                            for (var i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
+                            svc.fileToBase64(new Blob([bytes]), function (value) {
+                                prepared.image = value;
+                                resolve(prepared);
+                            }, function (message) { reject(new Error(message)); });
+                        } catch (error) { reject(new Error('An imported image could not be read.')); }
+                    });
+                }
+                return ready.then(function (preparedItem) {
+                    return write('importOne', { id: Number(preparedItem.id), item: preparedItem });
+                });
+            }).then(function () { if (progress) progress(index + 1, items.length); });
+        });
+        if (typeof data.ticker === 'string') chain = chain.then(function () { return svc.setTicker(data.ticker); });
+        return chain;
     };
-
-    svc.setTicker = function (text) {
-        localStorage.setItem(TICKER_KEY, text);
-        $rootScope.$broadcast('tickerUpdated', text);
-    };
-
     return svc;
 });

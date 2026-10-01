@@ -2,39 +2,50 @@ var app = angular.module("entertainmentApp", ["ngRoute"]);
 
 app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('!');
+    var publicResolve = { contentReady: function (ContentService) { return ContentService.load(false); } };
 
     $routeProvider
         .when("/home", {
             templateUrl: "pages/home.html",
-            controller: "HomeController"
+            controller: "HomeController",
+            resolve: publicResolve
         })
         .when("/movies", {
             templateUrl: "pages/movies.html",
-            controller: "MoviesController"
+            controller: "MoviesController",
+            resolve: publicResolve
         })
         .when("/music", {
             templateUrl: "pages/music.html",
-            controller: "MusicController"
+            controller: "MusicController",
+            resolve: publicResolve
         })
         .when("/celebrities", {
             templateUrl: "pages/celebrities.html",
-            controller: "CelebrityController"
+            controller: "CelebrityController",
+            resolve: publicResolve
         })
         .when("/trending", {
             templateUrl: "pages/trending.html",
-            controller: "TrendingController"
+            controller: "TrendingController",
+            resolve: publicResolve
         })
         .when("/influencers", {
             templateUrl: "pages/influencers.html",
-            controller: "InfluencerController"
+            controller: "InfluencerController",
+            resolve: publicResolve
         })
         .when("/bookmarks", {
             templateUrl: "pages/bookmarks.html",
-            controller: "BookmarksController"
+            controller: "BookmarksController",
+            resolve: publicResolve
         })
         .when("/news/:id", {
             templateUrl: "pages/news-details.html",
-            controller: "NewsController"
+            controller: "NewsController",
+            resolve: { contentReady: function (ContentService, AuthService) {
+                return AuthService.check().then(function (admin) { return ContentService.load(admin); });
+            } }
         })
         .when("/about", {
             templateUrl: "pages/about.html"
@@ -47,12 +58,12 @@ app.config(function ($routeProvider, $locationProvider) {
             templateUrl: "pages/admin-dashboard.html",
             controller: "AdminDashboardController",
             resolve: {
-                authCheck: function ($q, $location, AuthService) {
-                    if (AuthService.isLoggedIn()) {
-                        return true;
-                    }
-                    $location.path('/admin/login');
-                    return $q.reject('not-authenticated');
+                authCheck: function ($q, $location, AuthService, ContentService) {
+                    return AuthService.check().then(function (admin) {
+                        if (admin) return ContentService.load(true);
+                        $location.path('/admin/login');
+                        return $q.reject('not-authenticated');
+                    });
                 }
             }
         })
@@ -103,6 +114,8 @@ app.controller('AppController', function ($scope, $sce, $location, AuthService, 
 
     // Admin Access State (drives the navbar lock icon)
     $scope.isAdminLoggedIn = AuthService.isLoggedIn();
+    AuthService.check();
+    $scope.$on('authUpdated', function (event, value) { $scope.isAdminLoggedIn = value; });
     $scope.$on('$routeChangeSuccess', function () {
         $scope.isAdminLoggedIn = AuthService.isLoggedIn();
     });
@@ -192,5 +205,18 @@ app.controller('BookmarksController', function ($scope) {
 app.controller('NewsController', function ($scope, $routeParams, ContentService) {
     var id = parseInt($routeParams.id);
     var found = ContentService.getById(id);
-    $scope.article = found || ContentService.getAll()[0];
+    $scope.article = found;
+});
+
+app.run(function ($rootScope) {
+    $rootScope.$on('$routeChangeStart', function () { $rootScope.storageLoading = true; });
+    $rootScope.$on('$routeChangeSuccess', function () {
+        $rootScope.storageLoading = false;
+        $rootScope.storageError = '';
+    });
+    $rootScope.$on('$routeChangeError', function (event, next, previous, error) {
+        $rootScope.storageLoading = false;
+        $rootScope.storageError = error === 'not-authenticated' ? '' :
+            (error.message || 'Content could not be loaded. Please refresh to retry.');
+    });
 });

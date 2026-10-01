@@ -21,6 +21,7 @@ app.controller('AdminDashboardController', function ($scope, $location, AuthServ
         $scope.contentList = ContentService.getByCategory(TABS[$scope.activeTab]);
     }
     refreshList();
+    $scope.$on('contentUpdated', refreshList);
 
     $scope.setTab = function (tab) {
         $scope.activeTab = tab;
@@ -46,6 +47,7 @@ app.controller('AdminDashboardController', function ($scope, $location, AuthServ
     // ---------- Add / Edit Modal ----------
     $scope.openAddModal = function () {
         $scope.editMode = false;
+        $scope.saveError = '';
         $scope.formItem = {
             category: TABS[$scope.activeTab],
             status: 'Published',
@@ -62,40 +64,47 @@ app.controller('AdminDashboardController', function ($scope, $location, AuthServ
 
     $scope.openEditModal = function (item) {
         $scope.editMode = true;
+        $scope.saveError = '';
         $scope.formItem = angular.copy(item);
         $scope.showModal = true;
     };
 
     $scope.closeModal = function () {
+        if ($scope.saving || $scope.imageLoading) return;
         $scope.showModal = false;
         $scope.formItem = {};
     };
 
     $scope.onImageFileSelected = function (files) {
         if (!files || !files.length) return;
+        $scope.imageLoading = true;
         ContentService.fileToBase64(files[0], function (base64) {
-            $scope.$apply(function () {
-                $scope.formItem.image = base64;
-            });
+            $scope.$evalAsync(function () { $scope.formItem.image = base64; $scope.imageLoading = false; });
+        }, function (message) {
+            $scope.$evalAsync(function () { $scope.saveError = message; $scope.imageLoading = false; });
         });
     };
 
-    $scope.saveItem = function () {
-        if (!$scope.formItem.title || !$scope.formItem.category) return;
+    function perform(operation, success) {
+        if ($scope.saving) return;
+        $scope.saving = true;
+        $scope.saveError = '';
+        operation().then(function () {
+            if (success) success();
+        }, function (error) { $scope.saveError = error.message; })
+            .finally(function () { $scope.saving = false; refreshList(); });
+    }
 
-        if ($scope.editMode) {
-            ContentService.update($scope.formItem);
-        } else {
-            ContentService.add($scope.formItem);
-        }
-        refreshList();
-        $scope.closeModal();
+    $scope.saveItem = function () {
+        if (!$scope.formItem.title || !$scope.formItem.category || $scope.imageLoading) return;
+        perform(function () {
+            return $scope.editMode ? ContentService.update($scope.formItem) : ContentService.add($scope.formItem);
+        }, function () { $scope.showModal = false; $scope.formItem = {}; });
     };
 
     // ---------- Pin ----------
     $scope.togglePin = function (item) {
-        ContentService.togglePin(item.id);
-        refreshList();
+        perform(function () { return ContentService.togglePin(item.id); });
     };
 
     // ---------- Delete ----------
@@ -109,21 +118,41 @@ app.controller('AdminDashboardController', function ($scope, $location, AuthServ
 
     $scope.confirmDelete = function () {
         if ($scope.confirmDeleteItem) {
-            ContentService.remove($scope.confirmDeleteItem.id);
-            $scope.confirmDeleteItem = null;
-            refreshList();
+            perform(function () { return ContentService.remove($scope.confirmDeleteItem.id); },
+                function () { $scope.confirmDeleteItem = null; });
         }
     };
 
     // ---------- Breaking News Ticker ----------
     $scope.tickerText = ContentService.getTicker();
     $scope.saveTicker = function () {
-        ContentService.setTicker($scope.tickerText);
+        perform(function () { return ContentService.setTicker($scope.tickerText); },
+            function () { $scope.storageMessage = 'Ticker saved to Drive.'; });
+    };
+
+    $scope.importBackup = function (files) {
+        if (!files || !files.length || $scope.saving) return;
+        if (!window.confirm('Import this backup? Items with matching IDs will be replaced. Keep a copy of the backup file.')) return;
+        var reader = new FileReader();
+        reader.onerror = function () { $scope.$evalAsync(function () { $scope.saveError = 'Backup could not be read.'; }); };
+        reader.onload = function () {
+            $scope.$evalAsync(function () {
+                var data;
+                try { data = JSON.parse(reader.result); }
+                catch (e) { $scope.saveError = 'Choose a valid JSON backup.'; return; }
+                perform(function () {
+                    return ContentService.importLegacy(data, function (count, total) {
+                        $scope.storageMessage = 'Imported ' + count + ' of ' + total + ' items.';
+                    });
+                }, function () { $scope.storageMessage = 'Import completed. Check published content in another browser.'; });
+            });
+        };
+        reader.readAsText(files[0]);
     };
 
     // ---------- Account ----------
     $scope.logout = function () {
-        AuthService.logout();
-        $location.path('/home');
+        AuthService.logout().then(function () { $location.path('/home'); },
+            function () { $scope.saveError = 'Logout failed. Please retry.'; });
     };
 });

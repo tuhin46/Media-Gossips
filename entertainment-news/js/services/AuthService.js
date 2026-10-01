@@ -1,40 +1,26 @@
-app.factory('AuthService', function () {
-
-    var SESSION_KEY = 'ep_admin_session';
-    var PASSWORD_KEY = 'ep_admin_password';
-    var VALID_USER = 'admin';
-    var DEFAULT_PASS = 'pulse@2026';
-
-    var svc = {};
-
-    function getCurrentPassword() {
-        return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASS;
+app.factory('AuthService', function ($http, $q, $rootScope) {
+    var loggedIn = false;
+    function set(value) {
+        loggedIn = value;
+        $rootScope.$broadcast('authUpdated', value);
+        return value;
     }
-
-    svc.login = function (username, password) {
-        if (username === VALID_USER && password === getCurrentPassword()) {
-            sessionStorage.setItem(SESSION_KEY, 'true');
-            return true;
+    return {
+        isLoggedIn: function () { return loggedIn; },
+        check: function () {
+            return $http.get('/api/storage?action=session').then(function (response) {
+                return set(!!response.data.authenticated);
+            }, function () { return set(false); });
+        },
+        login: function (username, password) {
+            return $http.post('/api/storage', { action: 'login', username: username, password: password })
+                .then(function () { return set(true); }, function (response) {
+                    set(false);
+                    return $q.reject(new Error(response.data && response.data.error || 'Login could not be completed.'));
+                });
+        },
+        logout: function () {
+            return $http.post('/api/storage', { action: 'logout' }).then(function () { set(false); });
         }
-        return false;
     };
-
-    svc.logout = function () {
-        sessionStorage.removeItem(SESSION_KEY);
-    };
-
-    svc.isLoggedIn = function () {
-        return sessionStorage.getItem(SESSION_KEY) === 'true';
-    };
-
-    // Persists a new admin password (used by the "Forgot Password" flow)
-    svc.changePassword = function (newPassword) {
-        if (!newPassword || newPassword.length < 6) {
-            return false;
-        }
-        localStorage.setItem(PASSWORD_KEY, newPassword);
-        return true;
-    };
-
-    return svc;
 });
