@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Export Media Gossips browser content</title>
+<body><h1>Export existing browser content</h1>
+<p>Open this page on the same website, in the browser where you added your content. It downloads a backup without changing stored content.</p>
+<button id="export">Download content backup</button><p id="status"></p>
+<script>
+document.getElementById('export').onclick = function () {
+    try {
+        var raw = localStorage.getItem('ep_content_db');
+        if (!raw) throw new Error('No existing content was found in this browser on this website.');
+        var items = JSON.parse(raw);
+        if (!Array.isArray(items)) throw new Error('Stored content is not a valid array.');
+        var data = { items: items, ticker: localStorage.getItem('ep_ticker_text') || undefined };
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+        link.href = url;
+        link.download = 'Media-Gossips-Browser-Content.json';
+        link.click();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        document.getElementById('status').textContent = 'Exported ' + items.length + ' items, including embedded uploaded images. External images remain links.';
+    } catch (error) { document.getElementById('status').textContent = error.message; }
+};
+</script></body></html>

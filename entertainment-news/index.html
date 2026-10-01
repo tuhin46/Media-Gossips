@@ -54,6 +54,8 @@
 
     <!-- Main Angular SPA Content Area -->
     <main class="page-wrapper">
+        <p role="status" ng-if="storageLoading">Loading content…</p>
+        <p role="alert" class="admin-login-error" ng-if="storageError">{{ storageError }}</p>
         <div ng-view></div>
     </main>
 

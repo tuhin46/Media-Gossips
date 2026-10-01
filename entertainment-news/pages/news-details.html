@@ -1,4 +1,4 @@
-<div style="max-width: 860px; margin: 0 auto;">
+<div ng-if="article" style="max-width: 860px; margin: 0 auto;">
     <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <span class="glass-tag" style="position: static;"><span class="tag-dot"></span> {{ article.category | uppercase }}</span>
@@ -22,3 +22,4 @@
         </div>
     </div>
 </div>
+<p ng-if="!article">This article is unavailable or has not been published. <a href="#!/home">Back to Home</a></p>

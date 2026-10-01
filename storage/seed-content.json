@@ -1,0 +1,137 @@
+{
+  "ticker": "Live coverage: Global Music Tour Announced • Sci-Fi Blockbuster hits $1B worldwide • Cannes 2026 dates confirmed",
+  "items": [
+    {
+      "id": 101,
+      "title": "Dhurandhar",
+      "category": "Movies",
+      "rating": "8.5",
+      "year": "2025",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "High-octane action thriller breaking box office pre-sales records.",
+      "content": "Critics are praising the direction, stunts, and breakout performances. The film is tracking for record global box office earnings."
+    },
+    {
+      "id": 102,
+      "title": "Ustaad Bhagat Singh",
+      "category": "Movies",
+      "rating": "8.0",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Massive commercial entertainer scheduled for theatrical release.",
+      "content": "Anticipation reaches fever pitch as trailers reveal action-packed sequences and unforgettable dialogues."
+    },
+    {
+      "id": 103,
+      "title": "Sambhavami",
+      "category": "Movies",
+      "rating": "8.6",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Intense suspense drama gaining international festival buzz.",
+      "content": "Directed by acclaimed visionaries, the film explores mystery, nature, and human drama."
+    },
+    {
+      "id": 104,
+      "title": "Kalki 2898 AD",
+      "category": "Movies",
+      "rating": "8.3",
+      "year": "2024",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Futuristic sci-fi spectacle that redefined visual storytelling.",
+      "content": "A massive global hit blending mythology and futuristic tech with cutting-edge visual effects."
+    },
+    {
+      "id": 201,
+      "title": "Global Stadium World Tour",
+      "category": "Music",
+      "rating": "9.1",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Pop sensation reveals 40-city international stadium dates.",
+      "content": "Tickets sold out in minutes across all European and American tour stops."
+    },
+    {
+      "id": 202,
+      "title": "Midnight Acoustics Album",
+      "category": "Music",
+      "rating": "8.7",
+      "year": "2025",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Chart-topping acoustic release sweeping global streaming playlists.",
+      "content": "An intimate listening experience praised for authentic songwriting and vocals."
+    },
+    {
+      "id": 301,
+      "title": "Cannes Red Carpet Gala",
+      "category": "Celebrities",
+      "rating": "9.4",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "Stars gather for the most glamorous fashion night of the season.",
+      "content": "Unveiling top fashion couture, red carpet arrivals, and exclusive backstage interviews."
+    },
+    {
+      "id": 302,
+      "title": "Hollywood Spotlight Forum",
+      "category": "Celebrities",
+      "rating": "9.0",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "A-list actors talk about the future of filmmaking and creative craft.",
+      "content": "Insightful discussions with veteran actors and breakout performers of the year."
+    },
+    {
+      "id": 401,
+      "title": "Cannes 2026 Dates Confirmed",
+      "category": "Trending",
+      "rating": "9.5",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "The festival unveils its official 2026 calendar to global anticipation.",
+      "content": "Organizers confirm the red-carpet lineup dates, drawing early buzz from studios worldwide."
+    },
+    {
+      "id": 501,
+      "title": "Lifestyle Creator Hits 20M Followers",
+      "category": "Influencers",
+      "rating": "8.9",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "The viral content creator celebrates a massive social media milestone.",
+      "content": "Known for daily vlogs and brand collaborations, the creator's rapid rise has made them one of the most-watched personalities online."
+    },
+    {
+      "id": 502,
+      "title": "Influencer Fashion Line Sells Out in Hours",
+      "category": "Influencers",
+      "rating": "8.7",
+      "year": "2026",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=700&q=80",
+      "trailer": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "summary": "A social media star's debut apparel drop crashes the retailer's site.",
+      "content": "Fans camped online for the limited drop, which sold out globally within the first hour of launch."
+    }
+  ]
+}
